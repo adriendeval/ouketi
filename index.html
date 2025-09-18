@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oukéti?</title>
+    <script src="script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        textarea {
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 18px;
+            background-color: #202020;
+            color: white;
+        }
+
+        div {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .motCle {
+            display: inline-block;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background-color: #f0f0f0;
+            margin: 5px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+
+<body onload="bodyOnLoad()">
+
+    <h1 style="text-align: center;">Oukéti?</h1>
+
+    <div id="motsClesRestants" style="background-color: #9b1b1b4d;"></div>
+
+    <div id="motsClesSelectionnes" style="background-color: #1b9b3050;">Mots-clés sélectionnés : </div>
+
+    <hr>
+
+    <h2>Debug</h2>
+    <textarea id="debug" rows="10" style="width: 100%; padding: 10px;" readonly></textarea>
+
+</body>
+
+</html>
