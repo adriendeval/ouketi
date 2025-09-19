@@ -12,6 +12,11 @@
             margin: 20px;
         }
 
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
         textarea {
             font-family: 'Consolas', 'Courier New', Courier, monospace;
             font-size: 18px;
@@ -39,7 +44,7 @@
 
 <body onload="bodyOnLoad()">
 
-    <h1 style="text-align: center;">Oukéti?</h1>
+    <h1>Oukéti?</h1>
 
     <div id="motsClesRestants" style="background-color: #9b1b1b4d;"></div>
 
@@ -48,7 +53,12 @@
     <hr>
 
     <h2>Debug</h2>
-    <textarea id="debug" rows="10" style="width: 100%; padding: 10px;" readonly></textarea>
+    <div style="display: flex; justify-content: center;">
+        <textarea id="debug" rows="16"
+            style="width: 90%; max-width: 700px; padding: 16px; border-radius: 8px; border: 1px solid #444; box-shadow: 0 2px 8px rgba(0,0,0,0.08); background-color: #23272e; color: #e0e0e0;"
+            readonly></textarea>
+    </div>
+    </div>
 
 </body>
 
