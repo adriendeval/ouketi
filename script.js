@@ -31,7 +31,7 @@ function bodyOnLoad() {
 
 // Initialisation les tableaux des boutons
 function init() {
-    // initialiser les tableaux des boutons
+    // Initialiser les tableaux des boutons
     motsClesRestants = [];
     motsClesSelectionnes = [];
 
@@ -39,15 +39,15 @@ function init() {
         motsClesRestants[i] = tousLesMotsCles[i];
     }
 
-    // test...
-    motsClesSelectionnes.push(motsClesRestants[1]);
-    motsClesRestants.splice(1, 1);
+    // // Test (à supprimer plus tard)
+    // motsClesSelectionnes.push(motsClesRestants[1]);
+    // motsClesRestants.splice(1, 1);
 }
 
 function afficherMotsClesRestants() {
-    //En fonction du contenu de motsClesRestants
-    //Réafficher le contenu du div pour les mots clés restants
-    //Générer un bouton pour chaque mot clé
+    // En fonction du contenu de motsClesRestants
+    // Réafficher le contenu du div pour les mots clés restants
+    // Générer un bouton pour chaque mot clé
     divMotsClesRestants.innerHTML = 'Mots Clés : ';
     for (var i = 0; i < motsClesRestants.length; i++) {
         var motCle = motsClesRestants[i];
@@ -55,7 +55,6 @@ function afficherMotsClesRestants() {
             const bouton = document.createElement("button");
             bouton.textContent = motCle;
             bouton.dataset.idx = i;
-            bouton.dataset.source = 'restants';
             bouton.onclick = buttonOnClick;
             divMotsClesRestants.appendChild(bouton);
         }
@@ -63,9 +62,9 @@ function afficherMotsClesRestants() {
 }
 
 function afficherMotsClesSelectionnes() {
-    //En fonction du contenu de motsClesSelectionnes
-    //Réafficher le contenu du div pour les mots clés sélectionnés
-    //Générer un bouton pour chaque mot clé
+    // En fonction du contenu de motsClesSelectionnes
+    // Réafficher le contenu du div pour les mots clés sélectionnés
+    // Générer un bouton pour chaque mot clé
     divMotsClesSelectionnes.innerHTML = 'Mots Choisis : ';
     for (var i = 0; i < motsClesSelectionnes.length; i++) {
         var motCle = motsClesSelectionnes[i];
@@ -73,7 +72,6 @@ function afficherMotsClesSelectionnes() {
             const bouton = document.createElement("button");
             bouton.textContent = motCle;
             bouton.dataset.idx = i;
-            bouton.dataset.source = 'selectionnes';
             bouton.onclick = buttonOnClick;
             divMotsClesSelectionnes.appendChild(bouton);
         }
@@ -82,23 +80,24 @@ function afficherMotsClesSelectionnes() {
 
 function buttonOnClick() {
     var idx = parseInt(this.dataset.idx);
-    var source = this.dataset.source;
+    var motCle = this.textContent;
 
-    writeln("Clic : " + this.textContent + " (index: " + idx + ")");
+    writeln("Clic : " + motCle + " (index: " + idx + ")");
 
-    if (source === 'restants') {
-        // Déplacer de restants vers sélectionnés
-        var motCle = motsClesRestants[idx];
+    if (motsClesRestants.indexOf(motCle) !== -1) {
+        // Déplacer de "restants" vers "sélectionnés"
+        writeln(motsClesRestants.indexOf(motCle));
         motsClesSelectionnes.push(motCle);
         motsClesRestants.splice(idx, 1);
-    } else if (source === 'selectionnes') {
-        // Déplacer de sélectionnés vers restants
-        var motCle = motsClesSelectionnes[idx];
+    } else if (motsClesSelectionnes.indexOf(motCle) !== -1) {
+        // Déplacer de "sélectionnés" vers "restants"
+        writeln(motsClesSelectionnes.indexOf(motCle));
         motsClesRestants.push(motCle);
         motsClesSelectionnes.splice(idx, 1);
+        
     }
 
-    // Réafficher les deux divs
+    // Mettre à jour les deux DIVs
     afficherMotsClesRestants();
     afficherMotsClesSelectionnes();
 }
