@@ -19,9 +19,15 @@
 
         textarea {
             font-family: 'Consolas', 'Courier New', Courier, monospace;
-            font-size: 18px;
+            font-size: 16px;
             background-color: #202020;
             color: white;
+            border: none;
+            width: 100%;
+            height: 200px;
+            resize: none;
+            border-radius: 4px;
+            cursor: text;
         }
 
         div {
@@ -30,35 +36,31 @@
             border-radius: 5px;
         }
 
-        .motCle {
-            display: inline-block;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-            background-color: #f0f0f0;
-            margin: 5px;
-            transition: background-color 0.3s, color 0.3s;
+        button {
+            margin: 3px;
+            padding: 4px 8px;
+            font-size: 16px;
+            border: 1px solid #00000066;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #ffffffBB;
         }
     </style>
 </head>
 
 <body onload="bodyOnLoad()">
 
-    <h1>Oukéti?</h1>
+    <h1>Oukéti</h1>
 
-    <div id="motsClesRestants" style="background-color: #9b1b1b4d;"></div>
+    <div id="motsClesRestants" style="background-color: #FFC9C9; border: 2px solid #FFA2A2;"></div>
 
-    <div id="motsClesSelectionnes" style="background-color: #1b9b3050;">Mots-clés sélectionnés : </div>
+    <div id="motsClesSelectionnes" style="background-color: #A4F4CF; border: 2px solid #5EE9B5;">Mots-clés sélectionnés : </div>
 
     <hr>
 
     <h2>Debug</h2>
-    <div style="display: flex; justify-content: center;">
-        <textarea id="debug" rows="16"
-            style="width: 90%; max-width: 700px; padding: 16px; border-radius: 8px; border: 1px solid #444; box-shadow: 0 2px 8px rgba(0,0,0,0.08); background-color: #23272e; color: #e0e0e0;"
-            readonly></textarea>
-    </div>
-    </div>
+
+    <textarea id="debug" readonly></textarea>
 
 </body>
 
