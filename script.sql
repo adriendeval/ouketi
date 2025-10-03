@@ -87,4 +87,4 @@ JOIN correspond c ON o.id = c.idObjet
 JOIN motscles m ON c.idMotCle = m.id
 WHERE m.libelle IN ('Plastique', 'Rouge') -- Ajouter d'autres mots-clés si nécessaire (autant qu'on veut)
 GROUP BY o.id, o.nom
-HAVING COUNT(DISTINCT m.id) = 2; -- Remplacer 2 par le nombre de mots-clés recherchés
+HAVING COUNT(DISTINCT m.id) = 2; -- Remplacer 2 par le nombre de mots-clés recherchés (défini dans WHERE en fonction du nombre de mots-clés entrés)
