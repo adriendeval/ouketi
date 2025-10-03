@@ -70,9 +70,21 @@ VALUES
     (2, 8),
     (1, 1);
 
+------------------------------------------------------------------------
 
---  garder pour la suite
-SELECT * FROM correspond, motscles, objet WHERE correspond.idObjet = objet.id AND correspond.idMotCle = motscles.id; -- afficher toutes les correspondances
+-- Requêtes à garder pour la suite
 
-SELECT * FROM correspond WHERE correspond.idMotCle = 8 AND correspond.idObjet IN (SELECT idObjet FROM correspond WHERE correspond.idMotCle = 2); -- afficher les objets en Plastique et Rouge
+-- Afficher toutes les correspondances
+SELECT * FROM correspond, motscles, objet WHERE correspond.idObjet = objet.id AND correspond.idMotCle = motscles.id;
 
+-- Afficher les objets avec les mots clés "Plastique" et "Rouge"
+SELECT * FROM correspond WHERE correspond.idMotCle = 8 AND correspond.idObjet IN (SELECT idObjet FROM correspond WHERE correspond.idMotCle = 2);
+
+-- Afficher les objets avec plusieurs mots clés, sans limite
+SELECT o.id, o.nom
+FROM objet o
+JOIN correspond c ON o.id = c.idObjet
+JOIN motscles m ON c.idMotCle = m.id
+WHERE m.libelle IN ('Plastique', 'Rouge') -- Ajouter d'autres mots-clés si nécessaire (autant qu'on veut)
+GROUP BY o.id, o.nom
+HAVING COUNT(DISTINCT m.id) = 2; -- Remplacer 2 par le nombre de mots-clés recherchés
