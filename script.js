@@ -3,7 +3,7 @@ var motsClesRestants = [];
 var motsClesSelectionnes = [];
 
 var debug;
-var divMotsClesRestants;
+var divTousLesMotsCles;
 var divMotsClesSelectionnes;
 
 function writeln(message) {
@@ -14,11 +14,11 @@ function writeln(message) {
 
 function bodyOnLoad() {
     debug = document.getElementById("debug");
-    divMotsClesRestants = document.getElementById("motsClesRestants");
+    divTousLesMotsCles = document.getElementById("motsClesRestants");
     divMotsClesSelectionnes = document.getElementById("motsClesSelectionnes");
 
     init();
-    afficherMotsClesRestants();
+    afficherTousLesMotsCles();
     afficherMotsClesSelectionnes();
 }
 
@@ -31,14 +31,14 @@ function init() {
     }
 }
 
-function afficherMotsClesRestants() {
-    divMotsClesRestants.innerHTML = '<abbr title="Double-cliquez pour réinitialiser">Mots Clés</abbr> : ';
+function afficherTousLesMotsCles() {
+    divTousLesMotsCles.innerHTML = '<abbr title="Double-cliquez pour réinitialiser">Mots Clés</abbr> : ';
 
-    var abbrElement = divMotsClesRestants.querySelector('abbr');
+    var abbrElement = divTousLesMotsCles.querySelector('abbr');
     abbrElement.ondblclick = function () {
         writeln("Mots-clés réinitialisés");
         init();
-        afficherMotsClesRestants();
+        afficherTousLesMotsCles();
         afficherMotsClesSelectionnes();
     };
 
@@ -49,7 +49,7 @@ function afficherMotsClesRestants() {
             bouton.textContent = motCle;
             bouton.dataset.idx = i;
             bouton.onclick = buttonOnClick;
-            divMotsClesRestants.appendChild(bouton);
+            divTousLesMotsCles.appendChild(bouton);
         }
     }
 }
@@ -85,6 +85,6 @@ function buttonOnClick() {
 
     }
 
-    afficherMotsClesRestants();
+    afficherTousLesMotsCles();
     afficherMotsClesSelectionnes();
 }
