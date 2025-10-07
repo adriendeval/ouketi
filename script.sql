@@ -4,10 +4,6 @@ DROP DATABASE IF EXISTS Ouketi;
 -- Créer la base de données
 CREATE DATABASE Ouketi;
 
-DEFAULT CHARACTER SET utf8mb4;
-
-DEFAULT COLLATE utf8mb4_general_ci;
-
 -- Utiliser la base de données
 USE Ouketi;
 
