@@ -88,3 +88,7 @@ function buttonOnClick() {
     afficherTousLesMotsCles();
     afficherMotsClesSelectionnes();
 }
+
+function buttonSendOnClick() {
+    writeln("Envoi des mots-clés sélectionnés : " + motsClesSelectionnes.join(", "));
+}
