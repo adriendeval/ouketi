@@ -1,4 +1,4 @@
-var tousLesMotsCles = ["Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
+var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
 var motsClesRestants = [];
 var motsClesSelectionnes = [];
 
