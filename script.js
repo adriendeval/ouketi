@@ -1,9 +1,10 @@
-var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
+// var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
+var tousLesMotsCles = [];
 var motsClesRestants = [];
 var motsClesSelectionnes = [];
 
 var debug;
-var divTousLesMotsCles;
+var divMotsClesRestants;
 var divMotsClesSelectionnes;
 
 function writeln(message) {
@@ -14,7 +15,7 @@ function writeln(message) {
 
 function bodyOnLoad() {
     debug = document.getElementById("debug");
-    divTousLesMotsCles = document.getElementById("motsClesRestants");
+    divMotsClesRestants = document.getElementById("motsClesRestants");
     divMotsClesSelectionnes = document.getElementById("motsClesSelectionnes");
 
     init();
@@ -32,9 +33,9 @@ function init() {
 }
 
 function afficherTousLesMotsCles() {
-    divTousLesMotsCles.innerHTML = '<abbr title="Double-cliquez pour réinitialiser">Mots Clés</abbr> : ';
+    divMotsClesRestants.innerHTML = '<abbr title="Double-cliquez pour réinitialiser">Mots Clés</abbr> : ';
 
-    var abbrElement = divTousLesMotsCles.querySelector('abbr');
+    var abbrElement = divMotsClesRestants.querySelector('abbr');
     abbrElement.ondblclick = function () {
         writeln("Mots-clés réinitialisés");
         init();
@@ -49,7 +50,7 @@ function afficherTousLesMotsCles() {
             bouton.textContent = motCle;
             bouton.dataset.idx = i;
             bouton.onclick = buttonOnClick;
-            divTousLesMotsCles.appendChild(bouton);
+            divMotsClesRestants.appendChild(bouton);
         }
     }
 }
@@ -82,7 +83,6 @@ function buttonOnClick() {
         writeln(motsClesSelectionnes.indexOf(motCle));
         motsClesRestants.push(motCle);
         motsClesSelectionnes.splice(idx, 1);
-
     }
 
     afficherTousLesMotsCles();
@@ -92,3 +92,22 @@ function buttonOnClick() {
 function buttonSendOnClick() {
     writeln("Envoi des mots-clés sélectionnés : " + motsClesSelectionnes.join(", "));
 }
+
+// Charger tous les mots-clés depuis le fichier mots_cles.php
+function chargerTousLesMotsCles() {
+    const xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "mots_cles.php");
+    xhttp.send();
+
+    xhttp.onload = function () {
+        const jsonObj = JSON.parse(xhttp.responseText);
+
+        tousLesMotsCles = jsonObj.map(item => item.libelle);
+ 
+        init();
+        afficherTousLesMotsCles();
+        afficherMotsClesSelectionnes();
+    };
+}
+
+chargerTousLesMotsCles();
