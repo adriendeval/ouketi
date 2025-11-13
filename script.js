@@ -43,16 +43,20 @@ function afficherTousLesMotsCles() {
         afficherMotsClesSelectionnes();
     };
 
-    for (var i = 0; i < motsClesRestants.length; i++) {
-        var motCle = motsClesRestants[i];
-        if (motCle != null) {
-            const bouton = document.createElement("button");
-            bouton.textContent = motCle;
-            bouton.dataset.idx = i;
-            bouton.onclick = buttonOnClick;
-            divMotsClesRestants.appendChild(bouton);
-        }
-    }
+    // for (var i = 0; i < motsClesRestants.length; i++) {
+    //     var motCle = motsClesRestants[i];
+    //     if (motCle != null) {
+    //         const bouton = document.createElement("button");
+    //         bouton.textContent = motCle;
+    //         bouton.dataset.idx = i;
+    //         bouton.onclick = buttonOnClick;
+    //         divMotsClesRestants.appendChild(bouton);
+    //     }
+    // }
+
+    var str = '';
+    for(obj of tousLesMotsCles)
+        str += '<button>' + obj.libelle + '(' + obj.id + ')' + '</button>';
 }
 
 function afficherMotsClesSelectionnes() {
@@ -96,7 +100,7 @@ function buttonSendOnClick() {
 // Charger tous les mots-clés depuis le fichier mots_cles.php
 function chargerTousLesMotsCles() {
     const xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "mots_cles.php");
+    xhttp.open("GET", "mots_cles.php");     
     xhttp.send();
 
     xhttp.onload = function () {
