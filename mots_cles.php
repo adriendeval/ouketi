@@ -18,7 +18,6 @@ try {
     exit();
 }
 
-// Si des IDs sont fournis pour la recherche (intersection)
 if (isset($_GET['search_ids'])) {
     $ids = array_filter(array_map('intval', explode(',', $_GET['search_ids'])));
 
@@ -45,7 +44,6 @@ if (isset($_GET['search_ids'])) {
     $stmt->execute($params);
     $objets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Typage correct des données
     foreach ($objets as &$row) {
         $row['id'] = (int)$row['id'];
         $row['quantite'] = (int)$row['quantite'];

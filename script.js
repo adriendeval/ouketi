@@ -105,7 +105,7 @@ function render() {
             const btnLabel = document.createElement('button');
             btnLabel.type = 'button';
             btnLabel.className = 'btn btn-primary btn-sm disabled';
-            btnLabel.style.opacity = '1'; // Force opacity for readability
+            btnLabel.style.opacity = '1';
             btnLabel.textContent = motCle.libelle;
             
             const btnClose = document.createElement('button');
@@ -155,15 +155,12 @@ async function updateResults() {
     const motsClesSelectionnesIds = motsClesSelectionnes.map(motCle => motCle.id);
     
     if (motsClesSelectionnesIds.length === 0) {
-        container.innerHTML = ''; // On vide si rien n'est sélectionné
+        container.innerHTML = '';
         return;
     }
 
     writeln("Recherche pour les IDs : " + motsClesSelectionnesIds.join(', '));
     
-    // Petit indicateur de chargement discret si nécessaire, ou on laisse tel quel pour la rapidité
-    // container.innerHTML = '...'; 
-
     try {
         const response = await fetch(`mots_cles.php?search_ids=${motsClesSelectionnesIds.join(',')}`);
         if (!response.ok) {
@@ -367,5 +364,4 @@ async function chargerTousLesMotsCles() {
     }
 }
 
-// Appeler bodyOnLoad lorsque le DOM est prêt
 window.onload = bodyOnLoad;
