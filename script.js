@@ -158,10 +158,84 @@ function buttonOnClick() {
     render();
 }
 
-function buttonSendOnClick() {
+async function buttonSendOnClick() {
     const motsClesSelectionnesIds = motsClesSelectionnes.map(motCle => motCle.id);
     writeln("Envoi des mots-clés sélectionnés (IDs) : " + motsClesSelectionnesIds.join(', '));
-    return motsClesSelectionnesIds;
+
+    const container = document.getElementById('resultatsRecherche');
+    container.innerHTML = '<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Chargement...</span></div></div>';
+
+    if (motsClesSelectionnesIds.length === 0) {
+        container.innerHTML = '<div class="alert alert-warning">Veuillez sélectionner au moins un mot-clé pour lancer la recherche.</div>';
+        return;
+    }
+
+    try {
+        const response = await fetch(`mots_cles.php?search_ids=${motsClesSelectionnesIds.join(',')}`);
+        if (!response.ok) {
+            throw new Error("Erreur lors de la recherche. Statut: " + response.status);
+        }
+        const objets = await response.json();
+        renderResultats(objets);
+    } catch (error) {
+        writeln("Erreur recherche : " + error.message);
+        container.innerHTML = `<div class="alert alert-danger">Erreur : ${error.message}</div>`;
+    }
+}
+
+function renderResultats(objets) {
+    const container = document.getElementById('resultatsRecherche');
+    container.innerHTML = '';
+
+    const title = document.createElement('h3');
+    title.className = 'mb-3';
+    title.textContent = 'Résultats de la recherche (' + objets.length + ')';
+    container.appendChild(title);
+
+    if (objets.length === 0) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-info';
+        alert.textContent = 'Aucun objet ne correspond à tous les mots-clés sélectionnés.';
+        container.appendChild(alert);
+        return;
+    }
+
+    const table = document.createElement('table');
+    table.className = 'table table-hover table-bordered align-middle shadow-sm';
+
+    const thead = document.createElement('thead');
+    thead.className = 'table-light';
+    thead.innerHTML = `
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nom</th>
+            <th scope="col">Quantité</th>
+            <th scope="col">Type</th>
+            <th scope="col">Localisation</th>
+        </tr>
+    `;
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+
+    objets.forEach(objet => {
+        const quantite = typeof objet.quantite === 'number' ? objet.quantite : 1;
+        const typeLibelle = objet.estConteneur ? '<span class="badge bg-success">Conteneur</span>' : '<span class="badge bg-secondary">Objet</span>';
+        const localisation = objet.estContenuDans ? 'Dans <span class="fw-bold">#' + objet.estContenuDans + '</span>' : '<span class="text-muted fst-italic">Non contenu</span>';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${objet.id}</td>
+            <td class="fw-bold">${objet.nom}</td>
+            <td>${quantite}</td>
+            <td>${typeLibelle}</td>
+            <td>${localisation}</td>
+        `;
+        tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+    container.appendChild(table);
 }
 
 function buildMotCleTooltip(motCle) {

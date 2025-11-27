@@ -18,6 +18,45 @@ try {
     exit();
 }
 
+// Si des IDs sont fournis pour la recherche (intersection)
+if (isset($_GET['search_ids'])) {
+    $ids = array_filter(array_map('intval', explode(',', $_GET['search_ids'])));
+
+    if (empty($ids)) {
+        echo json_encode([], JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $count = count($ids);
+
+    $sql = "
+        SELECT o.id, o.nom, o.quantite, o.estConteneur, o.estContenuDans
+        FROM objet o
+        JOIN correspond c ON o.id = c.idObjet
+        WHERE c.idMotCle IN ($placeholders)
+        GROUP BY o.id
+        HAVING COUNT(DISTINCT c.idMotCle) = ?
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $params = $ids;
+    $params[] = $count;
+    $stmt->execute($params);
+    $objets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Typage correct des données
+    foreach ($objets as &$row) {
+        $row['id'] = (int)$row['id'];
+        $row['quantite'] = (int)$row['quantite'];
+        $row['estConteneur'] = (bool)$row['estConteneur'];
+        $row['estContenuDans'] = $row['estContenuDans'] !== null ? (int)$row['estContenuDans'] : null;
+    }
+
+    echo json_encode($objets, JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 // Requête pour récupérer les mots-clés ainsi que les objets associés
 $sql = "
     SELECT
