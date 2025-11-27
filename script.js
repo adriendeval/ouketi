@@ -84,56 +84,97 @@ function render() {
     if (!motsClesSelectionnes.length) {
         const placeholder = document.createElement('div');
         placeholder.className = 'alert alert-info mb-0';
-        placeholder.textContent = 'Aucun mot-clé sélectionné pour le moment.';
+        placeholder.textContent = 'Aucun mot-clé sélectionné. Sélectionnez des mots-clés ci-dessus pour filtrer les objets.';
         divMotsClesSelectionnes.appendChild(placeholder);
+    } else {
+        const selectionWrapper = document.createElement('div');
+        selectionWrapper.className = 'd-flex flex-wrap gap-2 align-items-center';
+
+        const label = document.createElement('span');
+        label.className = 'fw-bold me-2';
+        label.textContent = 'Filtres actifs :';
+        selectionWrapper.appendChild(label);
+
+        motsClesSelectionnes.forEach(motCle => {
+            if (!motCle) return;
+
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'btn-group';
+            btnGroup.role = 'group';
+
+            const btnLabel = document.createElement('button');
+            btnLabel.type = 'button';
+            btnLabel.className = 'btn btn-primary btn-sm disabled';
+            btnLabel.style.opacity = '1'; // Force opacity for readability
+            btnLabel.textContent = motCle.libelle;
+            
+            const btnClose = document.createElement('button');
+            btnClose.type = 'button';
+            btnClose.className = 'btn btn-primary btn-sm';
+            btnClose.innerHTML = '&times;';
+            btnClose.dataset.id = motCle.id;
+            btnClose.onclick = buttonOnClick;
+            btnClose.title = 'Retirer ce filtre';
+
+            btnGroup.appendChild(btnLabel);
+            btnGroup.appendChild(btnClose);
+            selectionWrapper.appendChild(btnGroup);
+        });
+
+        divMotsClesSelectionnes.appendChild(selectionWrapper);
+    }
+
+    // Lancer la recherche automatiquement
+    updateResults();
+}
+
+function buttonOnClick() {
+    const id = parseInt(this.dataset.id);
+
+    const indexRestant = motsClesRestants.findIndex(mc => mc.id === id);
+    const indexSelectionne = motsClesSelectionnes.findIndex(mc => mc.id === id);
+
+    writeln("Clic : " + (indexRestant !== -1 ? motsClesRestants[indexRestant].libelle : motsClesSelectionnes[indexSelectionne].libelle));
+
+    if (indexRestant !== -1) {
+        // Déplacer de restants vers sélectionnés
+        const [motCle] = motsClesRestants.splice(indexRestant, 1);
+        motsClesSelectionnes.push(motCle);
+    } else if (indexSelectionne !== -1) {
+        // Déplacer de sélectionnés vers restants
+        const [motCle] = motsClesSelectionnes.splice(indexSelectionne, 1);
+        motsClesRestants.push(motCle);
+        motsClesRestants.sort((a, b) => a.id - b.id);
+    }
+
+    render();
+}
+
+async function updateResults() {
+    const container = document.getElementById('resultatsRecherche');
+    const motsClesSelectionnesIds = motsClesSelectionnes.map(motCle => motCle.id);
+    
+    if (motsClesSelectionnesIds.length === 0) {
+        container.innerHTML = ''; // On vide si rien n'est sélectionné
         return;
     }
 
-    motsClesSelectionnes.forEach(motCle => {
-        if (!motCle) {
-            return;
+    writeln("Recherche pour les IDs : " + motsClesSelectionnesIds.join(', '));
+    
+    // Petit indicateur de chargement discret si nécessaire, ou on laisse tel quel pour la rapidité
+    // container.innerHTML = '...'; 
+
+    try {
+        const response = await fetch(`mots_cles.php?search_ids=${motsClesSelectionnesIds.join(',')}`);
+        if (!response.ok) {
+            throw new Error("Erreur lors de la recherche. Statut: " + response.status);
         }
-
-        const card = document.createElement('div');
-        card.className = 'card border-0 shadow-sm mb-3';
-
-        const cardBody = document.createElement('div');
-        cardBody.className = 'card-body';
-
-        const headerRow = document.createElement('div');
-        headerRow.className = 'd-flex align-items-center flex-wrap gap-2 mb-3';
-
-        const title = document.createElement('h5');
-        title.className = 'mb-0 me-auto';
-        title.textContent = '(' + motCle.id + ') ' + motCle.libelle;
-        headerRow.appendChild(title);
-
-        const metaWrapper = document.createElement('div');
-        metaWrapper.className = 'd-flex align-items-center gap-2';
-
-        const badge = document.createElement('span');
-        badge.className = 'badge bg-primary-subtle text-primary-emphasis';
-        const count = Array.isArray(motCle.objets) ? motCle.objets.length : 0;
-        badge.textContent = count + (count > 1 ? ' objets' : ' objet');
-        metaWrapper.appendChild(badge);
-
-        const actionBtn = document.createElement('button');
-        actionBtn.type = 'button';
-        actionBtn.className = 'btn btn-sm btn-outline-primary';
-        actionBtn.textContent = 'Retirer';
-        actionBtn.dataset.id = String(motCle.id);
-        actionBtn.onclick = buttonOnClick;
-        actionBtn.title = 'Retirer ce mot-clé de la sélection';
-        metaWrapper.appendChild(actionBtn);
-
-        headerRow.appendChild(metaWrapper);
-
-        cardBody.appendChild(headerRow);
-        cardBody.appendChild(createMotCleDetailsElement(motCle));
-
-        card.appendChild(cardBody);
-        divMotsClesSelectionnes.appendChild(card);
-    });
+        const objets = await response.json();
+        renderResultats(objets);
+    } catch (error) {
+        writeln("Erreur recherche : " + error.message);
+        container.innerHTML = `<div class="alert alert-danger">Erreur : ${error.message}</div>`;
+    }
 }
 
 function buttonOnClick() {

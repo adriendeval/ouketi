@@ -76,6 +76,8 @@ SELECT * FROM correspond, motscles, objet WHERE correspond.idObjet = objet.id AN
 -- Afficher les objets avec les mots clés "Plastique" et "Rouge"
 SELECT * FROM correspond WHERE correspond.idMotCle = 8 AND correspond.idObjet IN (SELECT idObjet FROM correspond WHERE correspond.idMotCle = 2);
 
+
+
 -- Afficher les objets avec plusieurs mots clés, sans limite
 SELECT o.id, o.nom
 FROM objet o
