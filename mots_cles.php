@@ -30,8 +30,9 @@ if (isset($_GET['search_ids'])) {
     $count = count($ids);
 
     $sql = "
-        SELECT o.id, o.nom, o.quantite, o.estConteneur, o.estContenuDans
+        SELECT o.id, o.nom, o.quantite, o.estConteneur, o.estContenuDans, p.nom AS parentNom
         FROM objet o
+        LEFT JOIN objet p ON o.estContenuDans = p.id
         JOIN correspond c ON o.id = c.idObjet
         WHERE c.idMotCle IN ($placeholders)
         GROUP BY o.id

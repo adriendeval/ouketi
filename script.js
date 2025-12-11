@@ -1,4 +1,4 @@
-var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
+// var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
 var tousLesMotsCles = [];
 var motsClesRestants = [];
 var motsClesSelectionnes = [];
@@ -18,6 +18,8 @@ function bodyOnLoad() {
     debug = document.getElementById("debug");
     divMotsClesRestants = document.getElementById("motsClesRestants");
     divMotsClesSelectionnes = document.getElementById("motsClesSelectionnes");
+
+    createModal();
 
     // L'initialisation se fait après le chargement des données
     chargerTousLesMotsCles();
@@ -107,7 +109,7 @@ function render() {
             btnLabel.className = 'btn btn-primary btn-sm disabled';
             btnLabel.style.opacity = '1';
             btnLabel.textContent = motCle.libelle;
-            
+
             const btnClose = document.createElement('button');
             btnClose.type = 'button';
             btnClose.className = 'btn btn-primary btn-sm';
@@ -153,14 +155,14 @@ function buttonOnClick() {
 async function updateResults() {
     const container = document.getElementById('resultatsRecherche');
     const motsClesSelectionnesIds = motsClesSelectionnes.map(motCle => motCle.id);
-    
+
     if (motsClesSelectionnesIds.length === 0) {
         container.innerHTML = '';
         return;
     }
 
     writeln("Recherche pour les IDs : " + motsClesSelectionnesIds.join(', '));
-    
+
     try {
         const response = await fetch(`mots_cles.php?search_ids=${motsClesSelectionnesIds.join(',')}`);
         if (!response.ok) {
@@ -260,6 +262,8 @@ function renderResultats(objets) {
         const typeLibelle = objet.estConteneur ? '<span class="badge bg-success">Conteneur</span>' : '<span class="badge bg-secondary">Objet</span>';
 
         const row = document.createElement('tr');
+        row.style.cursor = 'pointer';
+        row.onclick = () => showObjectDetails(objet);
         row.innerHTML = `
             <td>${objet.id}</td>
             <td class="fw-bold">${objet.nom}</td>
@@ -293,6 +297,7 @@ function formatObjetDetails(objet) {
 
     return objet.nom + ' (x' + quantite + ', ' + typeLibelle + ')';
 }
+
 function createMotCleDetailsElement(motCle) {
     const detailsContainer = document.createElement('div');
     detailsContainer.className = 'table-responsive';
@@ -355,6 +360,45 @@ async function chargerTousLesMotsCles() {
     } catch (error) {
         writeln("Erreur : " + error.message);
     }
+}
+
+function createModal() {
+    if (document.getElementById('detailsModal')) return;
+
+    const modalHtml = `
+    <div class="modal fade" id="detailsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="detailsModalLabel">Détails de l'objet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Nom :</strong> <span id="modalNom"></span></p>
+                    <p><strong>Quantité :</strong> <span id="modalQuantite"></span></p>
+                    <p><strong>Type :</strong> <span id="modalType"></span></p>
+                    <p><strong>Emplacement :</strong> <span id="modalEmplacement"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+function showObjectDetails(objet) {
+    document.getElementById('modalNom').textContent = objet.nom;
+    document.getElementById('modalQuantite').textContent = objet.quantite !== null ? objet.quantite : 1;
+    document.getElementById('modalType').textContent = objet.estConteneur ? 'Conteneur' : 'Objet';
+
+    const emplacement = objet.parentNom ? 'Dans "' + objet.parentNom + '"' : 'Aucun emplacement spécifié';
+    document.getElementById('modalEmplacement').textContent = emplacement;
+
+    const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+    modal.show();
 }
 
 window.onload = bodyOnLoad;
