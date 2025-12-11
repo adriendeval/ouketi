@@ -1,4 +1,4 @@
-// var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
+var tousLesMotsCles = [null, "Plastique", "Métal", "Carton", "Verre", "Outil", "Rangement", "Jaune", "Rouge", "Bleu", "Vert"];
 var tousLesMotsCles = [];
 var motsClesRestants = [];
 var motsClesSelectionnes = [];
@@ -249,7 +249,6 @@ function renderResultats(objets) {
             <th scope="col">Nom</th>
             <th scope="col">Quantité</th>
             <th scope="col">Type</th>
-            <th scope="col">Localisation</th>
         </tr>
     `;
     table.appendChild(thead);
@@ -259,7 +258,6 @@ function renderResultats(objets) {
     objets.forEach(objet => {
         const quantite = typeof objet.quantite === 'number' ? objet.quantite : 1;
         const typeLibelle = objet.estConteneur ? '<span class="badge bg-success">Conteneur</span>' : '<span class="badge bg-secondary">Objet</span>';
-        const localisation = objet.estContenuDans ? 'Dans <span class="fw-bold">#' + objet.estContenuDans + '</span>' : '<span class="text-muted fst-italic">Non contenu</span>';
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -267,7 +265,6 @@ function renderResultats(objets) {
             <td class="fw-bold">${objet.nom}</td>
             <td>${quantite}</td>
             <td>${typeLibelle}</td>
-            <td>${localisation}</td>
         `;
         tbody.appendChild(row);
     });
@@ -293,11 +290,9 @@ function formatObjetDetails(objet) {
 
     const quantite = typeof objet.quantite === 'number' && !Number.isNaN(objet.quantite) ? objet.quantite : 1;
     const typeLibelle = objet.estConteneur ? 'conteneur' : 'objet';
-    const localisation = objet.estContenuDans ? 'dans #' + objet.estContenuDans : 'non contenu';
 
-    return objet.nom + ' (x' + quantite + ', ' + typeLibelle + ', ' + localisation + ')';
+    return objet.nom + ' (x' + quantite + ', ' + typeLibelle + ')';
 }
-
 function createMotCleDetailsElement(motCle) {
     const detailsContainer = document.createElement('div');
     detailsContainer.className = 'table-responsive';
@@ -330,7 +325,6 @@ function createMotCleDetailsElement(motCle) {
     motCle.objets.forEach(objet => {
         const quantite = typeof objet.quantite === 'number' && !Number.isNaN(objet.quantite) ? objet.quantite : 1;
         const typeLibelle = objet.estConteneur ? 'Conteneur' : 'Objet';
-        const localisation = objet.estContenuDans ? 'Dans #' + objet.estContenuDans : 'Non contenu';
 
         const row = document.createElement('tr');
         row.innerHTML = `
@@ -338,7 +332,6 @@ function createMotCleDetailsElement(motCle) {
             <td>${objet.nom}</td>
             <td>${quantite}</td>
             <td>${typeLibelle}</td>
-            <td>${localisation}</td>
         `;
         tbody.appendChild(row);
     });
