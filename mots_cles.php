@@ -2,17 +2,10 @@
 
 header('Content-Type: application/json; charset=utf-8');
 
-// Connexion à la base de données
-$host = 'localhost';
-$db   = 'ouketi';
-$user = 'root';
-$pass = 'root';
-
-$dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+require_once __DIR__ . '/db.php';
 
 try {
-    $pdo = new PDO($dsn, $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo = getPdo();
 } catch (PDOException $e) {
     echo json_encode(['error' => 'Connexion échouée : ' . $e->getMessage()], JSON_UNESCAPED_UNICODE);
     exit();
@@ -26,8 +19,12 @@ if (isset($_GET['search_ids'])) {
         exit;
     }
 
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
     $count = count($ids);
+    $idPlaceholders = [];
+    foreach (array_values($ids) as $index => $idValue) {
+        $idPlaceholders[] = ':id' . $index;
+    }
+    $placeholders = implode(',', $idPlaceholders);
 
     $sql = "
         SELECT o.id, o.nom, o.quantite, o.estConteneur, o.estContenuDans, p.nom AS parentNom
@@ -36,13 +33,15 @@ if (isset($_GET['search_ids'])) {
         JOIN correspond c ON o.id = c.idObjet
         WHERE c.idMotCle IN ($placeholders)
         GROUP BY o.id
-        HAVING COUNT(DISTINCT c.idMotCle) = ?
+        HAVING COUNT(c.idMotCle) = :match_count
     ";
 
     $stmt = $pdo->prepare($sql);
-    $params = $ids;
-    $params[] = $count;
-    $stmt->execute($params);
+    foreach (array_values($ids) as $index => $idValue) {
+        $stmt->bindValue(':id' . $index, (int)$idValue, PDO::PARAM_INT);
+    }
+    $stmt->bindValue(':match_count', (int)$count, PDO::PARAM_INT);
+    $stmt->execute();
     $objets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     foreach ($objets as &$row) {
@@ -56,20 +55,13 @@ if (isset($_GET['search_ids'])) {
     exit;
 }
 
-// Requête pour récupérer les mots-clés ainsi que les objets associés
+// Requête légère: récupérer uniquement les mots-clés
 $sql = "
     SELECT
         m.id AS mot_cle_id,
-        m.libelle,
-        o.id AS objet_id,
-        o.nom,
-        o.quantite,
-        o.estConteneur,
-        o.estContenuDans
+        m.libelle
     FROM motscles m
-    LEFT JOIN correspond c ON c.idMotCle = m.id
-    LEFT JOIN objet o ON o.id = c.idObjet
-    ORDER BY m.libelle ASC, o.nom ASC
+    ORDER BY m.libelle ASC
 ";
 
 $stmt = $pdo->prepare($sql);
@@ -85,16 +77,6 @@ while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             'id' => $motCleId,
             'libelle' => $row['libelle'],
             'objets' => []
-        ];
-    }
-
-    if (!empty($row['objet_id'])) {
-        $mots_cles[$motCleId]['objets'][] = [
-            'id' => (int) $row['objet_id'],
-            'nom' => $row['nom'],
-            'quantite' => isset($row['quantite']) ? (int) $row['quantite'] : null,
-            'estConteneur' => (bool) $row['estConteneur'],
-            'estContenuDans' => $row['estContenuDans'] !== null ? (int) $row['estContenuDans'] : null
         ];
     }
 }

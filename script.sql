@@ -66,8 +66,6 @@ VALUES
     (2, 8),
     (1, 1);
 
-------------------------------------------------------------------------
-
 -- Requêtes à garder pour la suite
 
 -- Afficher toutes les correspondances
